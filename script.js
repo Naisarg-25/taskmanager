@@ -1,4 +1,4 @@
-const api = 'http://localhost:3000/tasks';
+const api = 'https://taskmanager-ruz2.onrender.com/tasks';
 
 function getSelectedCategory() {
     const select = document.getElementById('categorySelect');
