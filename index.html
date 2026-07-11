@@ -4,20 +4,249 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --bg: #f4f7fb;
+            --card: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --accent: #4f46e5;
+            --accent-soft: #eef2ff;
+            --border: #e5e7eb;
+            --danger: #ef4444;
+            --shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #eef2ff 0%, var(--bg) 100%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .app-shell {
+            width: min(760px, 100%);
+        }
+
+        .app-card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .eyebrow {
+            margin: 0 0 6px;
+            color: var(--accent);
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .pill {
+            background: var(--accent-soft);
+            color: var(--accent);
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .task-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        input, select, button {
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 12px 14px;
+            font-size: 0.95rem;
+        }
+
+        input:focus, select:focus {
+            outline: 2px solid rgba(79, 70, 229, 0.2);
+            border-color: var(--accent);
+        }
+
+        button {
+            background: var(--accent);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.16);
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        .task-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-item {
+            background: #fbfcff;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px 16px;
+        }
+
+        .task-item.is-complete .task-title {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+
+        .task-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .task-text {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .task-title {
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+        .task-category {
+            color: var(--muted);
+            font-size: 0.85rem;
+            background: var(--accent-soft);
+            border-radius: 999px;
+            padding: 4px 10px;
+            width: fit-content;
+        }
+
+        .task-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: white;
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 8px 10px;
+            box-shadow: none;
+        }
+
+        .action-btn--primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .action-btn--danger {
+            background: #fef2f2;
+            color: var(--danger);
+            border-color: #fecaca;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--muted);
+            padding: 24px 10px;
+            border: 1px dashed var(--border);
+            border-radius: 16px;
+            background: #fcfdff;
+        }
+
+        @media (max-width: 640px) {
+            .app-card { padding: 20px; }
+            .task-form { grid-template-columns: 1fr; }
+            .task-main { flex-direction: column; align-items: flex-start; }
+            .task-actions { width: 100%; }
+        }
+    </style>
 </head>
 <body>
-    <h1>Task Manager</h1>
-    <input id="taskInput" placeholder="New Task">
-    <select id="categorySelect">
-        <option value="Work">Work</option>
-        <option value="Personal">Personal</option>
-        <option value="Urgent">Urgent</option>
-    </select>
-    <button onclick="addTask()">Add Task</button>
-    <ul id="taskList"></ul>
+    <div class="app-shell">
+        <div class="app-card">
+            <div class="header">
+                <div>
+                    
+                    <h1>Task Manager</h1>
+                    
+                </div>
+            </div>
+
+            <div class="task-form">
+                <input id="taskInput" placeholder="What needs to be done?">
+                <select id="categorySelect">
+                    <option value="Work">Work</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Urgent">Urgent</option>
+                </select>
+                <button onclick="addTask()">Add Task</button>
+            </div>
+
+            <div class="task-toolbar">
+                <span class="section-title">Your tasks</span>
+            </div>
+            <ul id="taskList" class="task-list"></ul>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="script.js"></script>
-
 </body>
 </html>
